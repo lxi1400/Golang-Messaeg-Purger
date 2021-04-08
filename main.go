@@ -66,22 +66,21 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	
-	if strings.Contains(m.Content, ".purge") {
-		value := strings.Replace(m.Content, ".purge ", "", -1)
-		amount, err := strconv.Atoi(value)
+	if strings.HasPrefix(m.Content, ".purge") {
+		amount, err := strconv.Atoi(strings.Trim(m.Content, ".purge "))
 		if err != nil {
 			fmt.Printf("[!] Error: %s\n", err)
 		}		
-		deletedamount := 0
+		deled := 0
 		dID := "" // needed for fetching ? kinda odd but whatever
-		for deletedamount < amount {
+		for deled < amount {
 			messages, err := s.ChannelMessages(m.ChannelID, 100, dID, "", "")
 			if err != nil {
 				fmt.Printf("[!] Error: %s\n", err)
 			}
 		
 			for _, message := range messages {
-				if deletedamount >= amount {
+				if deled >= amount {
 					break
 				}
 		
@@ -95,11 +94,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					fmt.Printf("[!] Error: %v", err)
 					continue
 				}
-				deletedamount += 1
+				deled += 1
 				dID = message.ID
 			}
 		}
-			fmt.Printf("[!] Deleted %v messages!\n", deletedamount)
+			color.Green(fmt.Sprintf("[!] Deleted %v messages!\n", deled))
 	}
 }
 
