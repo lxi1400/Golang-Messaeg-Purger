@@ -69,14 +69,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if strings.HasPrefix(m.Content, ".purge") {
 		amount, err := strconv.Atoi(strings.Trim(m.Content, ".purge "))
 		if err != nil {
-			fmt.Printf("[!] Error: %s\n", err)
+			fmt.Printf("[!] Failed to convert to int: %s\n", err)
 		}		
 		deled := 0
-		dID := "" // needed for fetching ? kinda odd but whatever
 		for deled < amount {
-			messages, err := s.ChannelMessages(m.ChannelID, 100, dID, "", "")
+			messages, err := s.ChannelMessages(m.ChannelID, 100, "", "", "")
 			if err != nil {
-				fmt.Printf("[!] Error: %s\n", err)
+				fmt.Printf("[!] Failed to fetch messages: %s\n", err)
 			}
 		
 			for _, message := range messages {
@@ -91,7 +90,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				err = s.ChannelMessageDelete(m.ChannelID, message.ID)
 				color.Yellow(fmt.Sprintf("[!] Deleted message: %v\n[?] Content: %s\n", message.ID, message.Content))
 				if err != nil {
-					fmt.Printf("[!] Error: %v", err)
+					fmt.Printf("[!] Failed to delete message: %v", err)
 					continue
 				}
 				deled += 1
